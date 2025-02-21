@@ -1,0 +1,19 @@
+server:
+  port: 8080 # Default port for Spring Boot. Change if required.
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/iv?useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&useUnicode=yes&characterEncoding=utf8
+    username: root
+    password: da1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # Other options: create, create-drop, validate, none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect # For MySQL 8 and above. Use MySQL5Dialect for older versions
+    show-sql: true # Displays generated SQL statements in the console (optional).
+    generate-ddl: true # Ensures schema generation
+  application:
+    name: iv

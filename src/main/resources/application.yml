@@ -1,6 +1,6 @@
 server:
   port: 1040 # Default port for Spring Boot. Change if required.
- address: 0.0.0.0  # Listen on all interfacess
+  address: 0.0.0.0  # Listen on all interfacess
 
 spring:
   datasource:

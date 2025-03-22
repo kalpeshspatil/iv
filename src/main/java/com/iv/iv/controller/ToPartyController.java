@@ -12,20 +12,20 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/tp/customers")
+@RequestMapping("/tp/customers")
 public class ToPartyController {
 
     @Autowired
     private ToPartyService toPartyService;
 
     @GetMapping
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     public List<ToParty> getAllCustomers() {
         return toPartyService.getAllCustomers();
     }
 
     @GetMapping("/{id}")
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     public ResponseEntity<ToParty> getCustomerById(@PathVariable Long id) {
         Optional<ToParty> customer = toPartyService.getCustomerById(id);
         return customer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());

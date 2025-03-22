@@ -10,20 +10,20 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/pf/customers")
+@RequestMapping("/pf/customers")
 public class PurchaseFromController {
 
     @Autowired
     private PurchaseFromService purchaseFromService;
 
     @GetMapping
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     public List<PurchaseFrom> getAllCustomers() {
         return purchaseFromService.getAllCustomers();
     }
 
     @GetMapping("/{id}")
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     public ResponseEntity<PurchaseFrom> getCustomerById(@PathVariable Long id) {
         Optional<PurchaseFrom> customer = purchaseFromService.getCustomerById(id);
         return customer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());

@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/challanToParties")
-@CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+@RequestMapping("/challanToParties")
+@CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
 public class ChallanToPartiesController {
 
     @Autowired

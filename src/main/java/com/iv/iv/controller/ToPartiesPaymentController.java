@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/tp/payments")
+@RequestMapping("/tp/payments")
 public class ToPartiesPaymentController {
     @Autowired
     private ToPartiesPaymentsService toPartiesPaymentsService;
 
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     @PostMapping("/paid")
     public ResponseEntity<?> makePayment(@RequestBody ToPartiesPayments request) {
         ToPartiesPayments toPartiesPayments = toPartiesPaymentsService.recordToPartyPayment(request);

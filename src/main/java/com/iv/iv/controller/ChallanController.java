@@ -13,26 +13,26 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/challan")
+@RequestMapping("/challan")
 public class ChallanController {
 
     @Autowired
     private ChallanService challanService;
 
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     @GetMapping
     public List<Challan> getAllChallans() {
         return challanService.getAllChallans();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     @GetMapping("/{id}")
     public ResponseEntity<Challan> getChallanById(@PathVariable Long id) {
         Optional<Challan> challan = challanService.getChallanById(id);
         return challan.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     @PostMapping
     public ResponseEntity<?> createChallan(@RequestBody Challan challan) {
         try {
@@ -43,7 +43,7 @@ public class ChallanController {
                     .body(Map.of("error", e.getMessage(), "status", false));
         }
     }
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     @PutMapping
     public ResponseEntity<Challan> updateChallan(@RequestBody Challan challanDetails) {
         try {
@@ -60,7 +60,7 @@ public class ChallanController {
         return ResponseEntity.noContent().build();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS for React app only
+    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     @PutMapping("/updateStatus")
     public ResponseEntity<?> updateChallanStatus(@RequestBody Map<String, Object> requestBody) {
         try {

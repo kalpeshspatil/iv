@@ -1,12 +1,16 @@
 server:
+  servlet:
+    context-path: /api
   port: 1040 # Default port for Spring Boot. Change if required.
   address: 0.0.0.0  # Listen on all interfacess
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/iv_dakshabhi_com?useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&useUnicode=yes&characterEncoding=utf8
+    url: jdbc:mysql://localhost:3306/iv?useSSL=false&createDatabaseIfNotExist=true&serverTimezone=UTC&useUnicode=yes&characterEncoding=utf8
     username: root
-    password: w9jhZMTGVnzWWGR1
+    #password: w9jhZMTGVnzWWGR1
+    password: da1234
+
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

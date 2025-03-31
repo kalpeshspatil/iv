@@ -39,17 +39,22 @@ public class ChallanToPartiesService {
     public HomePageStatisticsDto getHomePageStaistics() {
         HomePageStatisticsDto homePageStatisticsDto = new HomePageStatisticsDto();
         BigDecimal outStanding = challanToPartiesRepository.calculateTotalOutstanding();
-        List<Object[]> resultOfOutstandingDaysGroup = challanToPartiesRepository.findOutstandingGroupedByDays();
-
-        // Parse the result into DTOs
-        List<OutstandingGroupByDaysDTO> groupedOutstanding = new ArrayList<>();
-        for (Object[] result : resultOfOutstandingDaysGroup) {
-            String dayGroup = (String) result[0];
-            Long totalOutstanding = ((Number) result[1]).longValue();
-
-            groupedOutstanding.add(new OutstandingGroupByDaysDTO(dayGroup, totalOutstanding));
+        List[] resultOfOutstandingDaysGroup = challanToPartiesRepository.findOutstandingGroupedByDays();
+        if (resultOfOutstandingDaysGroup == null) {
+            OutstandingGroupByDaysDTO outstandingGroupByDaysDTO = new OutstandingGroupByDaysDTO("0.0", "0.0", "0.0", "0.0", "0.0", "0.0");
+            homePageStatisticsDto.setOutstandingGroupByDaysDTO(outstandingGroupByDaysDTO);
+            return homePageStatisticsDto;// Default values
         }
-        homePageStatisticsDto.setOutstandingGroupByDaysDTO(groupedOutstanding);
+        // Parse the result into DTOs
+        OutstandingGroupByDaysDTO outstandingGroupByDaysDTO = new OutstandingGroupByDaysDTO(
+                resultOfOutstandingDaysGroup[0].get(1).toString(),
+                resultOfOutstandingDaysGroup[1].get(1).toString(),
+                resultOfOutstandingDaysGroup[2].get(1).toString(),
+                resultOfOutstandingDaysGroup[3].get(1).toString(),
+                resultOfOutstandingDaysGroup[4].get(1).toString(),
+                resultOfOutstandingDaysGroup[5].get(1).toString()
+        );
+        homePageStatisticsDto.setOutstandingGroupByDaysDTO(outstandingGroupByDaysDTO);
 
         List<Object[]> results = challanToPartiesRepository.getTotalQuantityByBrand();
         homePageStatisticsDto.setNoOfDuePayments(challanToPartiesRepository.calculateCountOfPendingPayments());

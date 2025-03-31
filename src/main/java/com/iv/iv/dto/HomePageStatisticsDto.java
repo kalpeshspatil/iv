@@ -19,13 +19,13 @@ public class HomePageStatisticsDto {
 
     private BigDecimal totalSaleOfShakti;
 
-    private List<OutstandingGroupByDaysDTO> outstandingGroupByDaysDTO;
+    private OutstandingGroupByDaysDTO outstandingGroupByDaysDTO;
 
-    public List<OutstandingGroupByDaysDTO> getOutstandingGroupByDaysDTO() {
+    public OutstandingGroupByDaysDTO getOutstandingGroupByDaysDTO() {
         return outstandingGroupByDaysDTO;
     }
 
-    public void setOutstandingGroupByDaysDTO(List<OutstandingGroupByDaysDTO> outstandingGroupByDaysDTO) {
+    public void setOutstandingGroupByDaysDTO(OutstandingGroupByDaysDTO outstandingGroupByDaysDTO) {
         this.outstandingGroupByDaysDTO = outstandingGroupByDaysDTO;
     }
 

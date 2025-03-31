@@ -24,25 +24,28 @@ public interface ChallanToPartiesRepository extends CrudRepository<ChallanToPart
     @Query(value = "SELECT COUNT(*) FROM iv.iv_to_parties_of_challan WHERE payment_status = 'PENDING'", nativeQuery = true)
     int calculateCountOfPendingPayments();
 
-    @Query(value = "SELECT \n" +
-            "    CASE \n" +
-            "        WHEN DATEDIFF(CURRENT_DATE, delivery_date) BETWEEN 0 AND 4 THEN '0-4 days'\n" +
-            "        WHEN DATEDIFF(CURRENT_DATE, delivery_date) BETWEEN 5 AND 10 THEN '5-10 days'\n" +
-            "        WHEN DATEDIFF(CURRENT_DATE, delivery_date) BETWEEN 11 AND 15 THEN '11-15 days'\n" +
-            "        WHEN DATEDIFF(CURRENT_DATE, delivery_date) BETWEEN 16 AND 20 THEN '16-20 days'\n" +
-            "\t\tWHEN DATEDIFF(CURRENT_DATE, delivery_date) BETWEEN 21 AND 30 THEN '21-30 days'\n" +
-            "        ELSE '30+ days'\n" +
-            "    END AS outstanding_days_group,\n" +
-            "    COUNT(*) AS total_count, -- Total entries in each group\n" +
-            "    SUM(outstanding_payment) AS total_outstanding_payment -- Total outstanding amount in each group\n" +
-            "FROM \n" +
-            "    iv_to_parties_of_challan\n" +
-            "WHERE \n" +
-            "    outstanding_payment > 0 -- Only include rows with pending payments\n" +
-            "GROUP BY \n" +
-            "    outstanding_days_group\n" +
-            "ORDER BY \n" +
-            "    MIN(DATEDIFF(CURRENT_DATE, delivery_date));\n" +
-            "\n", nativeQuery = true)
-    List<Object[]> findOutstandingGroupedByDays();
+    @Query(value = "WITH date_diff_cte AS (\n" +
+            "    SELECT \n" +
+            "        DATEDIFF(CURRENT_DATE, delivery_date) AS days_diff,\n" +
+            "        outstanding_payment\n" +
+            "    FROM iv_to_parties_of_challan\n" +
+            "    WHERE outstanding_payment > 0\n" +
+            "),\n" +
+            "groups_cte AS (\n" +
+            "    SELECT 'a1' AS outstanding_days_group, 0 AS min_days, 4 AS max_days UNION ALL\n" +
+            "    SELECT 'a2', 5, 10 UNION ALL\n" +
+            "    SELECT 'a3', 11, 15 UNION ALL\n" +
+            "    SELECT 'a4', 16, 20 UNION ALL\n" +
+            "    SELECT 'a5', 21, 30 UNION ALL\n" +
+            "    SELECT 'a6', 31, 9999\n" +
+            ")\n" +
+            "SELECT \n" +
+            "    g.outstanding_days_group,\n" +
+            "    COALESCE(SUM(CASE WHEN d.days_diff BETWEEN g.min_days AND g.max_days THEN d.outstanding_payment ELSE 0 END), 0.00) AS total_outstanding_payment\n" +
+            "FROM groups_cte g\n" +
+            "LEFT JOIN date_diff_cte d \n" +
+            "    ON d.days_diff BETWEEN g.min_days AND g.max_days\n" +
+            "GROUP BY g.outstanding_days_group, g.min_days\n" +
+            "ORDER BY g.min_days;", nativeQuery = true)
+    List[] findOutstandingGroupedByDays();
 }

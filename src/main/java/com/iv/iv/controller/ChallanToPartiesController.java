@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +34,7 @@ public class ChallanToPartiesController {
         if (optionalChallanToParties.isPresent()){
             optionalChallanToParties.get().setOrderStatus(challanToParties.getOrderStatus());
             if ("DELIVERED".equalsIgnoreCase(challanToParties.getOrderStatus())) {
-                optionalChallanToParties.get().setDeliveryDate(LocalDateTime.now()); // Set current date-time
+                optionalChallanToParties.get().setDeliveryDate(LocalDate.now()); // Set current date-time
             }
             updatedChallan = challanToPartiesService.saveProduct(optionalChallanToParties.get());
         }

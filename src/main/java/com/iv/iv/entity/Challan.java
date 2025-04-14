@@ -3,9 +3,9 @@ package com.iv.iv.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 
 @Entity
@@ -30,13 +30,13 @@ public class Challan {
 
 
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "IST")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "IST")
     @Column(name = "order_delivery_date")
-    private LocalDateTime orderDeliveryDate;
+    private LocalDate orderDeliveryDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "IST")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "IST")
     @Column(name = "order_placed_date", updatable = false)
-    private LocalDateTime orderPlacedDate;
+    private LocalDate orderPlacedDate;
 
     @Column(name = "vehicle_number")
     private String vehicleNumber;
@@ -55,7 +55,6 @@ public class Challan {
 
     @PrePersist
     protected void onCreate() {
-        this.orderPlacedDate = LocalDateTime.now();
         this.challanStatus = "PENDING";
     }
 
@@ -91,19 +90,19 @@ public class Challan {
         this.challanToParties = challanToParties;
     }
 
-    public LocalDateTime getOrderDeliveryDate() {
+    public LocalDate getOrderDeliveryDate() {
         return orderDeliveryDate;
     }
 
-    public void setOrderDeliveryDate(LocalDateTime orderDeliveryDate) {
+    public void setOrderDeliveryDate(LocalDate orderDeliveryDate) {
         this.orderDeliveryDate = orderDeliveryDate;
     }
 
-    public LocalDateTime getOrderPlacedDate() {
+    public LocalDate getOrderPlacedDate() {
         return orderPlacedDate;
     }
 
-    public void setOrderPlacedDate(LocalDateTime orderPlacedDate) {
+    public void setOrderPlacedDate(LocalDate orderPlacedDate) {
         this.orderPlacedDate = orderPlacedDate;
     }
 

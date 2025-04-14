@@ -42,5 +42,16 @@ public class Product {
     @Column(name = "product_brand")
     private String productBrand;
 
+    public Double getProductLandingPrice() {
+        return productLandingPrice;
+    }
+
+    public void setProductLandingPrice(Double productLandingPrice) {
+        this.productLandingPrice = productLandingPrice;
+    }
+
+    @Column(name = "product_landing_price")
+    private Double productLandingPrice;
+
 
 }

@@ -2,10 +2,13 @@ package com.iv.iv.service;
 
 import com.iv.iv.entity.*;
 import com.iv.iv.repository.*;
+import com.iv.iv.utility.IvConfigUtility;
+import com.iv.iv.utility.IvConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +20,9 @@ public class ChallanService {
     private ChallanRepository challanRepository;
 
     @Autowired
+    private ToPartiesIndividualLedgerRepository toPartiesIndividualLedgerRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -24,6 +30,9 @@ public class ChallanService {
 
     @Autowired
     private ToPartyRepository toPartyRepository;
+
+    @Autowired
+    IvConfigUtility configUtility;
 
     public List<Challan> getAllChallans() {
         return (List<Challan>) challanRepository.findAll();
@@ -45,19 +54,42 @@ public class ChallanService {
 
         // Ensure each ChallanToParties entry has a valid ToParty reference
         List<ChallanToParties> updatedChallanToParties = new ArrayList<>();
+        ToPartiesLedgerEntries toPartiesLedgerEntries = null;
+
         for (ChallanToParties challanToParties : challan.getChallanToParties()) {
             ToParty existingToParty = toPartyRepository.findById(challanToParties.getSelectedToParty().getTpCustomerId())
                     .orElseThrow(() -> new RuntimeException("ToParty not found"));
             challanToParties.setSelectedToParty(existingToParty);
             challanToParties.setChallan(challan);
-            challanToParties.setGrossAmount((long) (challanToParties.getChallanToPartiesQty() * challanToParties.getChallanToPartiesRate()));
-            challanToParties.setOutstandingPayment((long) (challanToParties.getChallanToPartiesQty() * challanToParties.getChallanToPartiesRate()));
+            BigDecimal grossAmountOfChallan = BigDecimal.valueOf(challanToParties.getChallanToPartiesQty()).multiply(challanToParties.getChallanToPartiesRate());
+            challanToParties.setGrossAmount(grossAmountOfChallan);
+            challanToParties.setOutstandingPayment(BigDecimal.valueOf(challanToParties.getChallanToPartiesQty()).multiply(challanToParties.getChallanToPartiesRate()));
             updatedChallanToParties.add(challanToParties);
+
+            //Ledger
+            toPartiesLedgerEntries = new ToPartiesLedgerEntries();
+
+            toPartiesLedgerEntries.setDebit(grossAmountOfChallan);
+            toPartiesLedgerEntries.setTpCustomerId(challanToParties.getSelectedToParty());
+            toPartiesLedgerEntries.setDate(challan.getOrderPlacedDate());
+            String particular = challan.getProduct().getProductBrand() +" "+ challan.getProduct().getProductName() +" "+challanToParties.getChallanToPartiesQty()+"*"+challanToParties.getChallanToPartiesRate();
+            toPartiesLedgerEntries.setParticular(particular);
+            BigDecimal balance = configUtility.getCustomerBalance(challanToParties.getSelectedToParty().getTpCustomerId());
+            if (balance.compareTo(BigDecimal.ZERO) == 0) {
+                toPartiesLedgerEntries.setBalance(grossAmountOfChallan);
+            } else {
+                toPartiesLedgerEntries.setBalance(balance.add(grossAmountOfChallan));
+            }
+            toPartiesLedgerEntries.setType(IvConstants.DEBIT);
+            toPartiesIndividualLedgerRepository.save(toPartiesLedgerEntries);
+
         }
         challan.setChallanToParties(updatedChallanToParties);
 
         return challanRepository.save(challan);
     }
+
+
 
     public Challan updateChallan(Challan challanDetails) {
         Optional<Challan> optionalChallan = challanRepository.findById(challanDetails.getChallanId());
@@ -96,7 +128,7 @@ public class ChallanService {
         if (optionalChallan.isPresent()) {
             Challan challan = optionalChallan.get();
             challan.setChallanStatus(status);
-            challan.setOrderDeliveryDate(LocalDateTime.now());
+            challan.setOrderDeliveryDate(LocalDate.now());
             return challanRepository.save(challan);
         } else {
             throw new RuntimeException("Challan not found");

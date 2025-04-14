@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -17,16 +18,16 @@ public class ToPartiesPayments {
     @Column(name = "payment_pkid")
     private Long paymentPkid;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "IST")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "IST")
     @Column(name = "payment_date")
-    private String paymentDate;
+    private LocalDate paymentDate;
 
     @ManyToOne
     @JoinColumn(name="challan_tp_pkid", referencedColumnName = "challan_tp_pkid", unique = false)
     private ChallanToParties challanToParties;
 
     @Column(name = "payment")
-    private double payment;
+    private BigDecimal payment;
 
     public Long getPaymentPkid() {
         return paymentPkid;
@@ -36,17 +37,17 @@ public class ToPartiesPayments {
         this.paymentPkid = paymentPkid;
     }
 
-    public String getPaymentDate() {
+    public LocalDate getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(String paymentDate) {
+    public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
     }
 
 
 
-    public double getPayment() {
+    public BigDecimal getPayment() {
         return payment;
     }
 
@@ -58,7 +59,7 @@ public class ToPartiesPayments {
         this.challanToParties = challanToParties;
     }
 
-    public void setPayment(double payment) {
+    public void setPayment(BigDecimal payment) {
         this.payment = payment;
     }
 }

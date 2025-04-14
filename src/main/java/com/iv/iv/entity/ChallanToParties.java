@@ -1,11 +1,11 @@
 package com.iv.iv.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "iv_to_parties_of_challan")
@@ -29,18 +29,18 @@ public class ChallanToParties {
     private int challanToPartiesQty;
 
     @Column(name = "outstanding_payment")
-    private Long outstandingPayment;
+    private BigDecimal outstandingPayment;
 
-    public Long getGrossAmount() {
+    public BigDecimal getGrossAmount() {
         return grossAmount;
     }
 
-    public void setGrossAmount(Long grossAmount) {
+    public void setGrossAmount(BigDecimal grossAmount) {
         this.grossAmount = grossAmount;
     }
 
     @Column(name = "gross_amount")
-    private Long grossAmount;
+    private BigDecimal grossAmount;
 
     public String getPaymentStatus() {
         return paymentStatus;
@@ -54,11 +54,11 @@ public class ChallanToParties {
         return pkId;
     }
 
-    public Long getOutstandingPayment() {
+    public BigDecimal getOutstandingPayment() {
         return outstandingPayment;
     }
 
-    public void setOutstandingPayment(Long outstandingPayment) {
+    public void setOutstandingPayment(BigDecimal outstandingPayment) {
         this.outstandingPayment = outstandingPayment;
     }
 
@@ -90,11 +90,11 @@ public class ChallanToParties {
         this.challanToPartiesQty = challanToPartiesQty;
     }
 
-    public Double getChallanToPartiesRate() {
+    public BigDecimal getChallanToPartiesRate() {
         return challanToPartiesRate;
     }
 
-    public void setChallanToPartiesRate(Double challanToPartiesRate) {
+    public void setChallanToPartiesRate(BigDecimal challanToPartiesRate) {
         this.challanToPartiesRate = challanToPartiesRate;
     }
 
@@ -107,7 +107,7 @@ public class ChallanToParties {
     }
 
     @Column(name = "challan_to_parties_rate")
-    private Double challanToPartiesRate;
+    private BigDecimal challanToPartiesRate;
 
     @Column(name = "order_status", columnDefinition = "VARCHAR(255) default 'PENDING'")
     private String orderStatus;
@@ -115,15 +115,15 @@ public class ChallanToParties {
     @Column(name = "payment_status", columnDefinition = "VARCHAR(255) default 'PENDING'")
     private String paymentStatus;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "IST")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "IST")
     @Column(name = "delivery_date")
-    private LocalDateTime deliveryDate;
+    private LocalDate deliveryDate;
 
-    public LocalDateTime getDeliveryDate() {
+    public LocalDate getDeliveryDate() {
         return deliveryDate;
     }
 
-    public void setDeliveryDate(LocalDateTime deliveryDate) {
+    public void setDeliveryDate(LocalDate deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
 

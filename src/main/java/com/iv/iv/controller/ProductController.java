@@ -10,19 +10,18 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
 @RequestMapping("/products")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
 
-    @CrossOrigin(origins = {"http://localhost:3000", "https://iv.dakshabhi.com"})  // Allow CORS for React app only
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         Optional<Product> product = productService.getProductById(id);
@@ -34,13 +33,14 @@ public class ProductController {
         return productService.saveProduct(product);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
-        Optional<Product> productOptional = productService.getProductById(id);
+    @PutMapping
+    public ResponseEntity<Product> updateProduct(@RequestBody Product productDetails) {
+        Optional<Product> productOptional = productService.getProductById(productDetails.getProductId());
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             product.setProductName(productDetails.getProductName());
             product.setProductBrand(productDetails.getProductBrand());
+            product.setProductLandingPrice(productDetails.getProductLandingPrice());
             return ResponseEntity.ok(productService.saveProduct(product));
         } else {
             return ResponseEntity.notFound().build();

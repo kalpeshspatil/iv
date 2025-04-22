@@ -1,16 +1,53 @@
 package com.iv.iv.dto;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-public class HomePageStatisticsDto {
+public class HomePageStatisticsDTO {
     private BigDecimal a1Outstanding;
 
     private BigDecimal accOutstanding;
 
     private BigDecimal shaktiOutstanding;
 
+    private BigDecimal totalSaleOfAccConcretePlus;
 
+    private BigDecimal totalSaleOfAccSuraksha;
+
+    public BigDecimal getTotalSaleOfAccConcretePlus() {
+        return totalSaleOfAccConcretePlus;
+    }
+
+    public void setTotalSaleOfAccConcretePlus(BigDecimal totalSaleOfAccConcretePlus) {
+        this.totalSaleOfAccConcretePlus = totalSaleOfAccConcretePlus;
+    }
+
+    public BigDecimal getTotalSaleOfAccSuraksha() {
+        return totalSaleOfAccSuraksha;
+    }
+
+    public void setTotalSaleOfAccSuraksha(BigDecimal totalSaleOfAccSuraksha) {
+        this.totalSaleOfAccSuraksha = totalSaleOfAccSuraksha;
+    }
+
+    public BigDecimal getTotalSaleOfA1Ppc() {
+        return totalSaleOfA1Ppc;
+    }
+
+    public void setTotalSaleOfA1Ppc(BigDecimal totalSaleOfA1Ppc) {
+        this.totalSaleOfA1Ppc = totalSaleOfA1Ppc;
+    }
+
+    public BigDecimal getTotalSaleOfShaktiPpc() {
+        return totalSaleOfShaktiPpc;
+    }
+
+    public void setTotalSaleOfShaktiPpc(BigDecimal totalSaleOfShaktiPpc) {
+        this.totalSaleOfShaktiPpc = totalSaleOfShaktiPpc;
+    }
+
+    private BigDecimal totalSaleOfA1Ppc;
+
+    private BigDecimal totalSaleOfShaktiPpc;
     private int noOfDuePayments;
 
     private BigDecimal totalSaleOfAcc;

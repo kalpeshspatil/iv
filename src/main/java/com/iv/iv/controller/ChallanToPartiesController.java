@@ -1,9 +1,7 @@
 package com.iv.iv.controller;
 
-import com.iv.iv.dto.ChallanToPartiesDto;
-import com.iv.iv.dto.HomePageStatisticsDto;
+import com.iv.iv.dto.HomePageStatisticsDTO;
 import com.iv.iv.entity.ChallanToParties;
-import com.iv.iv.entity.Product;
 import com.iv.iv.service.ChallanToPartiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +53,7 @@ public class ChallanToPartiesController {
     }
 
     @GetMapping("/homePageStat")
-    public HomePageStatisticsDto getHomePageStaistics() {
+    public HomePageStatisticsDTO getHomePageStaistics() {
         return challanToPartiesService.getHomePageStaistics();
     }
 

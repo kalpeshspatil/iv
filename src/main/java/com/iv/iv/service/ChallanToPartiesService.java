@@ -1,13 +1,13 @@
 package com.iv.iv.service;
 
 import com.iv.iv.dto.BrandTotalQuantityDTO;
-import com.iv.iv.dto.HomePageStatisticsDto;
+import com.iv.iv.dto.HomePageStatisticsDTO;
 import com.iv.iv.dto.OutstandingGroupByDaysDTO;
+import com.iv.iv.dto.ProductTotalQuantityDTO;
 import com.iv.iv.entity.ChallanToParties;
 import com.iv.iv.repository.ChallanToPartiesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -36,67 +36,122 @@ public class ChallanToPartiesService {
         challanToPartiesRepository.deleteById(id);
     }
 
-    public HomePageStatisticsDto getHomePageStaistics() {
-        HomePageStatisticsDto homePageStatisticsDto = new HomePageStatisticsDto();
-        BigDecimal outStanding = challanToPartiesRepository.calculateTotalOutstanding();
-        List[] resultOfOutstandingDaysGroup = challanToPartiesRepository.findOutstandingGroupedByDays();
-        if (resultOfOutstandingDaysGroup == null) {
-            OutstandingGroupByDaysDTO outstandingGroupByDaysDTO = new OutstandingGroupByDaysDTO("0.0", "0.0", "0.0", "0.0", "0.0", "0.0");
-            homePageStatisticsDto.setOutstandingGroupByDaysDTO(outstandingGroupByDaysDTO);
-            return homePageStatisticsDto;// Default values
+    public HomePageStatisticsDTO getHomePageStaistics() {
+        HomePageStatisticsDTO dto = new HomePageStatisticsDTO();
+
+        dto.setOutstandingGroupByDaysDTO(fetchOutstandingGroupedByDays());
+        dto.setNoOfDuePayments(challanToPartiesRepository.calculateCountOfPendingPayments());
+
+        List<BrandTotalQuantityDTO> brandStats = fetchBrandStats();
+        populateBrandData(dto, brandStats);
+
+        List<ProductTotalQuantityDTO> productNameStats = fetchProductNameStats();
+        populateProductNameData(dto, productNameStats);
+
+        return dto;
+    }
+
+
+
+
+    //Fetch Outstanding by Grouped Days
+    private OutstandingGroupByDaysDTO fetchOutstandingGroupedByDays() {
+        List[] result = challanToPartiesRepository.findOutstandingGroupedByDays();
+
+        if (result == null) {
+            return new OutstandingGroupByDaysDTO("0.0", "0.0", "0.0", "0.0");
         }
-        // Parse the result into DTOs
-        OutstandingGroupByDaysDTO outstandingGroupByDaysDTO = new OutstandingGroupByDaysDTO(
-                resultOfOutstandingDaysGroup[0].get(1).toString(),
-                resultOfOutstandingDaysGroup[1].get(1).toString(),
-                resultOfOutstandingDaysGroup[2].get(1).toString(),
-                resultOfOutstandingDaysGroup[3].get(1).toString(),
-                resultOfOutstandingDaysGroup[4].get(1).toString(),
-                resultOfOutstandingDaysGroup[5].get(1).toString()
+
+        return new OutstandingGroupByDaysDTO(
+                result[0].get(1).toString(),
+                result[1].get(1).toString(),
+                result[2].get(1).toString(),
+                result[3].get(1).toString()
         );
-        homePageStatisticsDto.setOutstandingGroupByDaysDTO(outstandingGroupByDaysDTO);
+    }
 
+    //Convert Raw Result to DTO List
+    private List<BrandTotalQuantityDTO> fetchBrandStats() {
         List<Object[]> results = challanToPartiesRepository.getTotalQuantityByBrand();
-        homePageStatisticsDto.setNoOfDuePayments(challanToPartiesRepository.calculateCountOfPendingPayments());
-
         List<BrandTotalQuantityDTO> dtoList = new ArrayList<>();
 
-        for (Object[] result : results) {
-            String brand = (String) result[0];  // assuming first column is the brand (String)
-            BigDecimal totalQuantity = (BigDecimal) result[1];  // assuming second column is totalQuantity (Long)
-            BigDecimal outstanding = (BigDecimal) result[2];
-            // Create a new DTO object and add it to the list
-            BrandTotalQuantityDTO dto = new BrandTotalQuantityDTO(brand, totalQuantity, outstanding);
-            dtoList.add(dto);
+        for (Object[] row : results) {
+            String brand = (String) row[0];
+            BigDecimal totalQuantity = (BigDecimal) row[1];
+            BigDecimal outstanding = (BigDecimal) row[2];
+            dtoList.add(new BrandTotalQuantityDTO(brand, totalQuantity, outstanding));
         }
 
-        for (BrandTotalQuantityDTO result : dtoList) {
-            String brand = result.getBrand();
-            BigDecimal totalQuantity = result.getTotalQuantity();
-            BigDecimal outstanding = result.getOutstanding();
+        return dtoList;
+    }
 
-            switch (brand) {
+    private List<ProductTotalQuantityDTO> fetchProductNameStats() {
+        List<Object[]> results = challanToPartiesRepository.getTotalQuantityByProductName();
+        List<ProductTotalQuantityDTO> dtoList = new ArrayList<>();
+
+        for (Object[] row : results) {
+            String brand = (String) row[0];
+            String productName = (String) row[1];
+            BigDecimal totalQuantity = (BigDecimal) row[2];
+
+            dtoList.add(new ProductTotalQuantityDTO(brand, productName, totalQuantity));
+        }
+
+        return dtoList;
+    }
+
+    //Populate DTO with Brand-Specific Data
+    private void populateBrandData(HomePageStatisticsDTO dto, List<BrandTotalQuantityDTO> brandStats) {
+        for (BrandTotalQuantityDTO stat : brandStats) {
+            switch (stat.getBrand()) {
                 case "A1":
-                    homePageStatisticsDto.setTotalSaleOfA1(totalQuantity);
-                    homePageStatisticsDto.setA1Outstanding(outstanding);
+                    dto.setTotalSaleOfA1(stat.getTotalQuantity());
+                    dto.setA1Outstanding(stat.getOutstanding());
                     break;
                 case "ACC":
-                    homePageStatisticsDto.setTotalSaleOfAcc(totalQuantity);
-                    homePageStatisticsDto.setAccOutstanding(outstanding);
+                    dto.setTotalSaleOfAcc(stat.getTotalQuantity());
+                    dto.setAccOutstanding(stat.getOutstanding());
                     break;
                 case "Shakti":
-                    homePageStatisticsDto.setTotalSaleOfShakti(totalQuantity);
-                    homePageStatisticsDto.setShaktiOutstanding(outstanding);
+                    dto.setTotalSaleOfShakti(stat.getTotalQuantity());
+                    dto.setShaktiOutstanding(stat.getOutstanding());
                     break;
                 default:
-                    // Handle case where the brand does not match any of the known ones
+                    // Optional: handle unknown brand if needed
                     break;
             }
-
-            // Use these variables as needed
-            System.out.println("Brand: " + brand + ", Total Quantity: " + totalQuantity);
         }
-        return homePageStatisticsDto;
     }
+
+    private void populateProductNameData(HomePageStatisticsDTO dto, List<ProductTotalQuantityDTO> productNameStats) {
+        for (ProductTotalQuantityDTO stat : productNameStats) {
+            String brand = stat.getProductBrand();
+            String name = stat.getProductName();
+            String key = brand + "|" + name;
+
+            switch (key) {
+                case "A1|PPC":
+                    dto.setTotalSaleOfA1Ppc(stat.getTotalQuantity());
+                    break;
+                case "ACC|C+":
+                    dto.setTotalSaleOfAccConcretePlus(stat.getTotalQuantity());
+                    break;
+                case "ACC|Suraksha":
+                    dto.setTotalSaleOfAccSuraksha(stat.getTotalQuantity());
+                    break;
+                case "Shakti|PPC":
+                    dto.setTotalSaleOfShaktiPpc(stat.getTotalQuantity());
+                    break;
+                default:
+                    // Optional: log or handle unrecognized combinations
+                    break;
+            }
+        }
+    }
+
+
+
+
+
 
 }

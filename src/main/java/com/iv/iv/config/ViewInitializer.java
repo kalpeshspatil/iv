@@ -12,7 +12,7 @@ public class ViewInitializer {
     public CommandLineRunner createCustomerLedgerView(JdbcTemplate jdbcTemplate) {
         return args -> {
             String sql = """
-                        CREATE OR REPLACE VIEW v_tp_customer_ledger_summary AS
+                        CREATE OR REPLACE VIEW iv_tp_customer_ledger_view AS
                                         SELECT
                                           c.tp_customer_id,
                                           c.tp_customer_name AS customer_name,

@@ -32,45 +32,59 @@ public class ToPartiesPaymentsService {
 
     public ToPartiesPayments recordToPartyPayment(ToPartiesPayments request) {
         try {
-            Optional<ChallanToParties> toPartyOptional = toPartiesRepository.findById(Long.valueOf(request.getChallanToParties().getPkId()));
-            ToPartiesPayments paymentRecorded = null;
-            if (toPartyOptional.isPresent()) {
-                ChallanToParties toParty = toPartyOptional.get();
+            Optional<ChallanToParties> toPartyOptional = fetchChallanToParty(request);
+            if (toPartyOptional.isEmpty()) return null;
 
-                // Insert into ToPartiesPayment table
-                ToPartiesPayments payment = new ToPartiesPayments();
-                payment.setPaymentDate(request.getPaymentDate());
-                payment.setChallanToParties(request.getChallanToParties());
-                payment.setPayment(request.getPayment());
+            ChallanToParties toParty = toPartyOptional.get();
 
-                paymentRecorded = paymentRepository.save(payment);
+            ToPartiesPayments savedPayment = savePaymentRecord(request);
+            updateOutstandingPayment(toParty, request);
+            saveLedgerEntry(toParty, request);
 
-                // Update remaining balance in ToParties table
-                BigDecimal newBalance = toParty.getOutstandingPayment().subtract(request.getPayment());
-                if(newBalance.compareTo(BigDecimal.ZERO) == 0){
-                    toParty.setPaymentStatus(IvConstants.RECIEVED);
-                }
-                toParty.setOutstandingPayment(newBalance.max(BigDecimal.ZERO)); // Ensure balance doesn't go negative
-
-                toPartiesRepository.save(toParty);
-
-
-                ToPartiesLedgerEntries toPartiesLedgerEntries = new ToPartiesLedgerEntries();
-
-                toPartiesLedgerEntries.setTpCustomerId(toParty.getSelectedToParty());
-                toPartiesLedgerEntries.setDate(request.getPaymentDate());
-                toPartiesLedgerEntries.setCredit(request.getPayment());
-                toPartiesLedgerEntries.setBalance((configUtility.getCustomerBalance(toParty.getSelectedToParty().getTpCustomerId())).subtract(request.getPayment()));
-                toPartiesLedgerEntries.setType(IvConstants.CREDIT);
-
-                toPartiesIndividualLedgerRepository.save(toPartiesLedgerEntries);
-
-
-
-            }
-            return paymentRecorded;
-        } catch (Exception exception) {
-            throw exception;
+            return savedPayment;
+        } catch (Exception e) {
+            throw e;
         }
     }
+
+    private Optional<ChallanToParties> fetchChallanToParty(ToPartiesPayments request) {
+        Long pkId = Long.valueOf(request.getChallanToParties().getPkId());
+        return toPartiesRepository.findById(pkId);
+    }
+
+    private ToPartiesPayments savePaymentRecord(ToPartiesPayments request) {
+        ToPartiesPayments payment = new ToPartiesPayments();
+        payment.setPaymentDate(request.getPaymentDate());
+        payment.setChallanToParties(request.getChallanToParties());
+        payment.setPayment(request.getPayment());
+
+        return paymentRepository.save(payment);
+    }
+
+    private void updateOutstandingPayment(ChallanToParties toParty, ToPartiesPayments request) {
+        BigDecimal newBalance = toParty.getOutstandingPayment().subtract(request.getPayment());
+
+        if (newBalance.compareTo(BigDecimal.ZERO) == 0) {
+            toParty.setPaymentStatus(IvConstants.RECIEVED);
+        }
+
+        toParty.setOutstandingPayment(newBalance.max(BigDecimal.ZERO));
+        toPartiesRepository.save(toParty);
+    }
+
+    private void saveLedgerEntry(ChallanToParties toParty, ToPartiesPayments request) {
+        ToPartiesLedgerEntries ledgerEntry = new ToPartiesLedgerEntries();
+
+        ledgerEntry.setTpCustomerId(toParty.getSelectedToParty());
+        ledgerEntry.setDate(request.getPaymentDate());
+        ledgerEntry.setCredit(request.getPayment());
+
+        BigDecimal currentBalance = configUtility.getCustomerBalance(toParty.getSelectedToParty().getTpCustomerId());
+        ledgerEntry.setBalance(currentBalance.subtract(request.getPayment()));
+
+        ledgerEntry.setType(IvConstants.CREDIT);
+
+        toPartiesIndividualLedgerRepository.save(ledgerEntry);
+    }
+
 }

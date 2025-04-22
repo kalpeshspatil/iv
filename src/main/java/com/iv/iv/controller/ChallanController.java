@@ -50,7 +50,7 @@ public class ChallanController {
             Challan updatedChallan = challanService.updateChallan(challanDetails);
             return ResponseEntity.ok(updatedChallan);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 

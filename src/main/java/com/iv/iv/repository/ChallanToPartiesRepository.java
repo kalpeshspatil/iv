@@ -32,12 +32,10 @@ public interface ChallanToPartiesRepository extends CrudRepository<ChallanToPart
             "    WHERE outstanding_payment > 0\n" +
             "),\n" +
             "groups_cte AS (\n" +
-            "    SELECT 'a1' AS outstanding_days_group, 0 AS min_days, 4 AS max_days UNION ALL\n" +
-            "    SELECT 'a2', 5, 10 UNION ALL\n" +
-            "    SELECT 'a3', 11, 15 UNION ALL\n" +
-            "    SELECT 'a4', 16, 20 UNION ALL\n" +
-            "    SELECT 'a5', 21, 30 UNION ALL\n" +
-            "    SELECT 'a6', 31, 9999\n" +
+            "    SELECT 'a1' AS outstanding_days_group, 0 AS min_days, 8 AS max_days UNION ALL\n" +
+            "    SELECT 'a2', 9, 15 UNION ALL\n" +
+            "    SELECT 'a3', 16, 21 UNION ALL\n" +
+            "    SELECT 'a4', 22, 9999\n" +
             ")\n" +
             "SELECT \n" +
             "    g.outstanding_days_group,\n" +
@@ -48,4 +46,20 @@ public interface ChallanToPartiesRepository extends CrudRepository<ChallanToPart
             "GROUP BY g.outstanding_days_group, g.min_days\n" +
             "ORDER BY g.min_days;", nativeQuery = true)
     List[] findOutstandingGroupedByDays();
+
+    @Query(value = "SELECT \n" +
+            "    p.product_brand,\n" +
+            "    p.product_name, \n" +
+            "    SUM(ctp.challan_to_parties_qty) AS total_quantity\n" +
+            "FROM \n" +
+            "    iv.iv_to_parties_of_challan ctp\n" +
+            "JOIN \n" +
+            "    iv.iv_challan c ON ctp.challan_id = c.challan_id\n" +
+            "JOIN \n" +
+            "    iv.iv_product p ON c.product_id = p.product_id\n" +
+            "WHERE \n" +
+            "    p.product_name IN ('C+', 'Suraksha', 'Shakti')\n" +
+            "GROUP BY \n" +
+            "    p.product_brand, p.product_name;", nativeQuery = true)
+    List<Object[]> getTotalQuantityByProductName();
 }

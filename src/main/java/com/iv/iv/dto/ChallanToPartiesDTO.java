@@ -2,13 +2,13 @@ package com.iv.iv.dto;
 
 import com.iv.iv.entity.ChallanToParties;
 
-public class ChallanToPartiesDto {
+public class ChallanToPartiesDTO {
     private int pkId;
     private int challanToPartiesQty;
     private String orderStatus;
     private Long challanId;  // Avoid fetching full Challan object
 
-    public ChallanToPartiesDto(ChallanToParties challanToParties) {
+    public ChallanToPartiesDTO(ChallanToParties challanToParties) {
         this.pkId = challanToParties.getPkId();
         this.challanToPartiesQty = challanToParties.getChallanToPartiesQty();
         this.orderStatus = challanToParties.getOrderStatus();

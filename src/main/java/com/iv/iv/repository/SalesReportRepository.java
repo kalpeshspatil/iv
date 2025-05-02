@@ -24,7 +24,7 @@ public interface SalesReportRepository extends CrudRepository<Challan, Long> {
             "WHERE p.product_brand = :productBrand " +
             "AND tpc.delivery_date BETWEEN :startDate AND :endDate " +
             "AND (:customerId IS NULL OR tp.tp_customer_id = :customerId) " +
-            "ORDER BY tpc.delivery_date ASC", nativeQuery = true)
+            "ORDER BY tpc.delivery_date ASC", nativeQuery = true )
 
     List<SalesReportDTO> findSalesReport(
             @Param("productBrand") String productBrand,

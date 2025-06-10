@@ -21,11 +21,10 @@ public interface SalesReportRepository extends CrudRepository<Challan, Long> {
             "JOIN iv_challan c ON tpc.challan_id = c.challan_id " +
             "JOIN iv_product p ON c.product_id = p.product_id " +
             "JOIN iv_to_party tp ON tpc.tp_customer_id = tp.tp_customer_id " +
-            "WHERE p.product_brand = :productBrand " +
+            "WHERE (:productBrand IS NULL OR p.product_brand = :productBrand) " +
             "AND tpc.delivery_date BETWEEN :startDate AND :endDate " +
             "AND (:customerId IS NULL OR tp.tp_customer_id = :customerId) " +
             "ORDER BY tpc.delivery_date ASC", nativeQuery = true )
-
     List<SalesReportDTO> findSalesReport(
             @Param("productBrand") String productBrand,
             @Param("customerId") Long customerId,

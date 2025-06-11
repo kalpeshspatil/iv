@@ -14,7 +14,7 @@ public class ChallanToParties {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="challan_tp_pkid", nullable = false)
-    private int pkId;
+    private Long pkId;
 
     @JsonIgnoreProperties({"challanToParties"}) // This will ignore the "challan" field inside ChallanToParties
     @ManyToOne
@@ -50,7 +50,7 @@ public class ChallanToParties {
         this.paymentStatus = paymentStatus;
     }
 
-    public int getPkId() {
+    public Long getPkId() {
         return pkId;
     }
 
@@ -62,7 +62,7 @@ public class ChallanToParties {
         this.outstandingPayment = outstandingPayment;
     }
 
-    public void setPkId(int pkId) {
+    public void setPkId(Long pkId) {
         this.pkId = pkId;
     }
 

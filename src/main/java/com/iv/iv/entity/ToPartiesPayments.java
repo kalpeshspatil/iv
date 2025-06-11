@@ -23,8 +23,8 @@ public class ToPartiesPayments {
     private LocalDate paymentDate;
 
     @ManyToOne
-    @JoinColumn(name="challan_tp_pkid", referencedColumnName = "challan_tp_pkid", unique = false)
-    private ChallanToParties challanToParties;
+    @JoinColumn(name="tp_customer_id", referencedColumnName = "tp_customer_id", unique = false)
+    private ToParty toParty;
 
     @Column(name = "payment")
     private BigDecimal payment;
@@ -51,12 +51,12 @@ public class ToPartiesPayments {
         return payment;
     }
 
-    public ChallanToParties getChallanToParties() {
-        return challanToParties;
+    public ToParty getToParty() {
+        return toParty;
     }
 
-    public void setChallanToParties(ChallanToParties challanToParties) {
-        this.challanToParties = challanToParties;
+    public void setToParty(ToParty toParty) {
+        this.toParty = toParty;
     }
 
     public void setPayment(BigDecimal payment) {

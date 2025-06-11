@@ -1,6 +1,5 @@
 package com.iv.iv.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 

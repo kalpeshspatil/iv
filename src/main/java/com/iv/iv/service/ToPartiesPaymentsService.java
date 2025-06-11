@@ -3,9 +3,11 @@ package com.iv.iv.service;
 import com.iv.iv.entity.ChallanToParties;
 import com.iv.iv.entity.ToPartiesLedgerEntries;
 import com.iv.iv.entity.ToPartiesPayments;
+import com.iv.iv.entity.ToParty;
 import com.iv.iv.repository.ChallanToPartiesRepository;
 import com.iv.iv.repository.ToPartiesIndividualLedgerRepository;
 import com.iv.iv.repository.ToPartiesPaymentsRepository;
+import com.iv.iv.repository.ToPartyRepository;
 import com.iv.iv.utility.IvConfigUtility;
 import com.iv.iv.utility.IvConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class ToPartiesPaymentsService {
     private ChallanToPartiesRepository toPartiesRepository;
 
     @Autowired
+    private ToPartyRepository toPartyRepository;
+
+    @Autowired
     private ToPartiesIndividualLedgerRepository toPartiesIndividualLedgerRepository;
 
     @Autowired
@@ -32,13 +37,13 @@ public class ToPartiesPaymentsService {
 
     public ToPartiesPayments recordToPartyPayment(ToPartiesPayments request) {
         try {
-            Optional<ChallanToParties> toPartyOptional = fetchChallanToParty(request);
+            Optional<ToParty> toPartyOptional = fetchToParty(request);
             if (toPartyOptional.isEmpty()) return null;
 
-            ChallanToParties toParty = toPartyOptional.get();
+            ToParty toParty = toPartyOptional.get();
 
             ToPartiesPayments savedPayment = savePaymentRecord(request);
-            updateOutstandingPayment(toParty, request);
+           // updateOutstandingPayment(toParty, request);
             saveLedgerEntry(toParty, request);
 
             return savedPayment;
@@ -47,15 +52,15 @@ public class ToPartiesPaymentsService {
         }
     }
 
-    private Optional<ChallanToParties> fetchChallanToParty(ToPartiesPayments request) {
-        Long pkId = Long.valueOf(request.getChallanToParties().getPkId());
-        return toPartiesRepository.findById(pkId);
+    private Optional<ToParty> fetchToParty(ToPartiesPayments request) {
+        Long pkId = Long.valueOf(request.getToParty().getTpCustomerId());
+        return toPartyRepository.findById(pkId);
     }
 
     private ToPartiesPayments savePaymentRecord(ToPartiesPayments request) {
         ToPartiesPayments payment = new ToPartiesPayments();
         payment.setPaymentDate(request.getPaymentDate());
-        payment.setChallanToParties(request.getChallanToParties());
+        payment.setToParty(request.getToParty());
         payment.setPayment(request.getPayment());
 
         return paymentRepository.save(payment);
@@ -72,14 +77,14 @@ public class ToPartiesPaymentsService {
         toPartiesRepository.save(toParty);
     }
 
-    private void saveLedgerEntry(ChallanToParties toParty, ToPartiesPayments request) {
+    private void saveLedgerEntry(ToParty toParty, ToPartiesPayments request) {
         ToPartiesLedgerEntries ledgerEntry = new ToPartiesLedgerEntries();
 
-        ledgerEntry.setTpCustomerId(toParty.getSelectedToParty());
+        ledgerEntry.setTpCustomerId(toParty);
         ledgerEntry.setDate(request.getPaymentDate());
         ledgerEntry.setCredit(request.getPayment());
 
-        BigDecimal currentBalance = configUtility.getCustomerBalance(toParty.getSelectedToParty().getTpCustomerId());
+        BigDecimal currentBalance = configUtility.getCustomerBalance(toParty.getTpCustomerId());
         ledgerEntry.setBalance(currentBalance.subtract(request.getPayment()));
 
         ledgerEntry.setType(IvConstants.CREDIT);

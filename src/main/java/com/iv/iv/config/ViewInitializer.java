@@ -14,8 +14,8 @@ public class ViewInitializer {
             String sql = """
                         CREATE OR REPLACE VIEW iv_tp_customer_ledger_view AS
                                         SELECT
-                                          c.tp_customer_id,
-                                          c.tp_customer_name AS customer_name,
+                                          c.tp_customer_id AS tpCustomerId,
+                                          c.tp_customer_name AS customerName,
                                           SUM(l.debit) AS debit,
                                           SUM(l.credit) AS credit,
                                           SUM(l.debit) - IFNULL(SUM(l.credit), 0) AS balance

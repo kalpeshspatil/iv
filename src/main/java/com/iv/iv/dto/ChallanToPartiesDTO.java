@@ -3,7 +3,7 @@ package com.iv.iv.dto;
 import com.iv.iv.entity.ChallanToParties;
 
 public class ChallanToPartiesDTO {
-    private int pkId;
+    private Long pkId;
     private int challanToPartiesQty;
     private String orderStatus;
     private Long challanId;  // Avoid fetching full Challan object
@@ -15,11 +15,11 @@ public class ChallanToPartiesDTO {
         this.challanId = challanToParties.getChallan().getChallanId();
     }
 
-    public int getPkId() {
+    public Long getPkId() {
         return pkId;
     }
 
-    public void setPkId(int pkId) {
+    public void setPkId(Long pkId) {
         this.pkId = pkId;
     }
 

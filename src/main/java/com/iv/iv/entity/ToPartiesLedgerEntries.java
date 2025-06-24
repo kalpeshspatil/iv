@@ -3,6 +3,7 @@ package com.iv.iv.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.iv.iv.utility.IvConstants;
+import com.iv.iv.utility.LedgerStatus;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

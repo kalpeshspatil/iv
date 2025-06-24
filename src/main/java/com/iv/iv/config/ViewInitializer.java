@@ -18,11 +18,14 @@ public class ViewInitializer {
                                           c.tp_customer_name AS customerName,
                                           SUM(l.debit) AS debit,
                                           SUM(l.credit) AS credit,
+                                          SUM(l.qty) AS qty,
                                           SUM(l.debit) - IFNULL(SUM(l.credit), 0) AS balance
                                         FROM
                                           iv_tp_customer_ledger l
                                         JOIN
                                           iv_to_party c ON l.tp_customer_id = c.tp_customer_id
+                                        WHERE
+                                          l.status = 'ACTIVE'  
                                         GROUP BY
                                           c.tp_customer_id;
                     """;

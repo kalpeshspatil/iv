@@ -14,7 +14,7 @@ public class ChallanToParties {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="challan_tp_pkid", nullable = false)
-    private Long pkId;
+    private Long challanTpPkid;
 
     @JsonIgnoreProperties({"challanToParties"}) // This will ignore the "challan" field inside ChallanToParties
     @ManyToOne
@@ -31,8 +31,19 @@ public class ChallanToParties {
     @Column(name = "outstanding_payment")
     private BigDecimal outstandingPayment;
 
+    @Column(name = "vehicle_number")
+    private String vehicleNumber;
+
     public BigDecimal getGrossAmount() {
         return grossAmount;
+    }
+
+    public String getVehicleNumber() {
+        return vehicleNumber;
+    }
+
+    public void setVehicleNumber(String vehicleNumber) {
+        this.vehicleNumber = vehicleNumber;
     }
 
     public void setGrossAmount(BigDecimal grossAmount) {
@@ -50,9 +61,7 @@ public class ChallanToParties {
         this.paymentStatus = paymentStatus;
     }
 
-    public Long getPkId() {
-        return pkId;
-    }
+
 
     public BigDecimal getOutstandingPayment() {
         return outstandingPayment;
@@ -62,8 +71,12 @@ public class ChallanToParties {
         this.outstandingPayment = outstandingPayment;
     }
 
-    public void setPkId(Long pkId) {
-        this.pkId = pkId;
+    public Long getChallanTpPkid() {
+        return challanTpPkid;
+    }
+
+    public void setChallanTpPkid(Long challanTpPkid) {
+        this.challanTpPkid = challanTpPkid;
     }
 
     public Challan getChallan() {

@@ -9,7 +9,7 @@ public class ChallanToPartiesDTO {
     private Long challanId;  // Avoid fetching full Challan object
 
     public ChallanToPartiesDTO(ChallanToParties challanToParties) {
-        this.pkId = challanToParties.getPkId();
+        this.pkId = challanToParties.getChallanTpPkid();
         this.challanToPartiesQty = challanToParties.getChallanToPartiesQty();
         this.orderStatus = challanToParties.getOrderStatus();
         this.challanId = challanToParties.getChallan().getChallanId();

@@ -4,8 +4,15 @@ import com.iv.iv.dto.BrandTotalQuantityDTO;
 import com.iv.iv.dto.HomePageStatisticsDTO;
 import com.iv.iv.dto.OutstandingGroupByDaysDTO;
 import com.iv.iv.dto.ProductTotalQuantityDTO;
+import com.iv.iv.entity.Challan;
 import com.iv.iv.entity.ChallanToParties;
+import com.iv.iv.entity.ToPartiesLedgerEntries;
+import com.iv.iv.entity.ToParty;
 import com.iv.iv.repository.ChallanToPartiesRepository;
+import com.iv.iv.repository.ToPartiesIndividualLedgerRepository;
+import com.iv.iv.utility.IvConfigUtility;
+import com.iv.iv.utility.IvConstants;
+import com.iv.iv.utility.LedgerStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +26,15 @@ public class ChallanToPartiesService {
 
     @Autowired
     ChallanToPartiesRepository challanToPartiesRepository;
+
+    @Autowired
+    IvConfigUtility configUtility;
+
+    @Autowired
+    private ToPartiesIndividualLedgerRepository toPartiesIndividualLedgerRepository;
+
+    @Autowired
+    private ToPartiesLedgerService toPartiesLedgerService;
 
     public List<ChallanToParties> getAllChallanToParties() {
         return (List<ChallanToParties>) challanToPartiesRepository.findAll();
@@ -50,8 +66,6 @@ public class ChallanToPartiesService {
 
         return dto;
     }
-
-
 
 
     //Fetch Outstanding by Grouped Days
@@ -150,8 +164,54 @@ public class ChallanToPartiesService {
     }
 
 
+    public void recordLedgerEntries(ChallanToParties challanToParties) {
+        if (challanToParties == null || challanToParties.getChallan() == null) {
+            throw new IllegalArgumentException("Challan or ChallanToParties is null");
+        }
 
+        Challan challan = challanToParties.getChallan();
+        BigDecimal grossAmount = challanToParties.getGrossAmount();
+        ToParty customer = challanToParties.getSelectedToParty();
 
+        if (customer == null) {
+            throw new IllegalArgumentException("ToParty (customer) is null");
+        }
 
+        ToPartiesLedgerEntries ledgerEntry = new ToPartiesLedgerEntries();
 
+        ledgerEntry.setDebit(grossAmount);
+        ledgerEntry.setTpCustomerId(customer);
+        ledgerEntry.setDate(challan.getOrderDeliveryDate());
+        ledgerEntry.setQty(challanToParties.getChallanToPartiesQty());
+        ledgerEntry.setChallanToParty(challanToParties);
+
+        String particular;
+        try {
+            particular = challan.getProduct().getProductBrand() + " "
+                    + challan.getProduct().getProductName() + " "
+                    + challanToParties.getChallanToPartiesQty() + " * "
+                    + challanToParties.getChallanToPartiesRate();
+        } catch (Exception e) {
+            particular = "NA";
+        }
+        ledgerEntry.setParticular(particular);
+
+        // Get current balance and calculate new balance
+        BigDecimal currentBalance = configUtility.getCustomerBalance(customer.getTpCustomerId());
+        BigDecimal newBalance = (currentBalance == null ? BigDecimal.ZERO : currentBalance).add(grossAmount);
+
+        ledgerEntry.setBalance(newBalance);
+        ledgerEntry.setType(IvConstants.DEBIT);
+
+        toPartiesIndividualLedgerRepository.save(ledgerEntry);
+
+    }
+
+    public void markLedgerEntryAsVoided(ChallanToParties challanToParties) {
+        Optional<ToPartiesLedgerEntries> ledgerEntries =
+                toPartiesLedgerService.getLedgerByToChallanToParty(challanToParties.getChallanTpPkid());
+
+            ledgerEntries.get().setStatus(LedgerStatus.VOIDED);   //If status marked cancelled or pending
+            toPartiesIndividualLedgerRepository.save(ledgerEntries.get());
+    }
 }

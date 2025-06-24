@@ -20,7 +20,9 @@ public class ToPartiesLedgerController {
     @GetMapping
     public ResponseEntity<List<ToPartyLedgerDto>> getAll() {
         try {
-            return ResponseEntity.ok(toPartiesLedgerService.getAllToPartiesLedger());
+            List<ToPartyLedgerDto> list = toPartiesLedgerService.getAllToPartiesLedger();
+            return ResponseEntity.ok(
+                    list );
         } catch (Exception exception) {
             return ResponseEntity.badRequest().build();
         }
@@ -35,4 +37,6 @@ public class ToPartiesLedgerController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+
 }

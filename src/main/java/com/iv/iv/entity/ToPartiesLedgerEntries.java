@@ -21,6 +21,26 @@ public class ToPartiesLedgerEntries {
     @JoinColumn(name="tp_customer_id", referencedColumnName = "tp_customer_id", nullable = false)
      private ToParty tpCustomerId;
 
+    public ChallanToParties getChallanToParty() {
+        return challanToParty;
+    }
+
+    public void setChallanToParty(ChallanToParties challanToParty) {
+        this.challanToParty = challanToParty;
+    }
+
+    public LedgerStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(LedgerStatus status) {
+        this.status = status;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "challan_tp_pkid", referencedColumnName = "challan_tp_pkid", nullable = false)
+    private ChallanToParties challanToParty;
+
     public ToParty getTpCustomerId() {
         return tpCustomerId;
     }
@@ -88,6 +108,21 @@ public class ToPartiesLedgerEntries {
 
     @Column(name = "balance")
     private BigDecimal balance;
+
+    @Column(name = "qty", nullable = true)
+    private Integer qty;
+
+    public Integer getQty() {
+        return qty;
+    }
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private LedgerStatus status = LedgerStatus.ACTIVE;
+
+    public void setQty(Integer qty) {
+        this.qty = qty;
+    }
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;

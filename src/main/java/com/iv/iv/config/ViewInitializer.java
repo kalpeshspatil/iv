@@ -29,7 +29,6 @@ public class ViewInitializer {
                                         GROUP BY
                                           c.tp_customer_id;
                     """;
-
             jdbcTemplate.execute(sql);
             System.out.println("✅ View 'v_tp_customer_summary' created or replaced.");
         };

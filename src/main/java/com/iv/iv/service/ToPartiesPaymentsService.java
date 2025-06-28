@@ -41,6 +41,7 @@ public class ToPartiesPaymentsService {
             if (toPartyOptional.isEmpty()) return null;
 
             ToParty toParty = toPartyOptional.get();
+            request.setToParty(toParty);
 
             ToPartiesPayments savedPayment = savePaymentRecord(request);
            // updateOutstandingPayment(toParty, request);
@@ -86,7 +87,6 @@ public class ToPartiesPaymentsService {
 
         BigDecimal currentBalance = configUtility.getCustomerBalance(toParty.getTpCustomerId());
         ledgerEntry.setBalance(currentBalance.subtract(request.getPayment()));
-
         ledgerEntry.setType(IvConstants.CREDIT);
 
         toPartiesIndividualLedgerRepository.save(ledgerEntry);

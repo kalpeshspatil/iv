@@ -22,13 +22,6 @@ public class ToPartiesLedgerEntries {
     @JoinColumn(name="tp_customer_id", referencedColumnName = "tp_customer_id", nullable = false)
      private ToParty tpCustomerId;
 
-    public ChallanToParties getChallanToParty() {
-        return challanToParty;
-    }
-
-    public void setChallanToParty(ChallanToParties challanToParty) {
-        this.challanToParty = challanToParty;
-    }
 
     public LedgerStatus getStatus() {
         return status;
@@ -38,9 +31,9 @@ public class ToPartiesLedgerEntries {
         this.status = status;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "challan_tp_pkid", referencedColumnName = "challan_tp_pkid", nullable = false)
-    private ChallanToParties challanToParty;
+//    @ManyToOne
+//    @JoinColumn(name = "challan_tp_pkid", referencedColumnName = "challan_tp_pkid", nullable = false)
+//    private ChallanToParties challanToParty;
 
     public ToParty getTpCustomerId() {
         return tpCustomerId;

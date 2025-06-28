@@ -183,7 +183,7 @@ public class ChallanToPartiesService {
         ledgerEntry.setTpCustomerId(customer);
         ledgerEntry.setDate(challan.getOrderDeliveryDate());
         ledgerEntry.setQty(challanToParties.getChallanToPartiesQty());
-        ledgerEntry.setChallanToParty(challanToParties);
+       // ledgerEntry.setChallanToParty(challanToParties);
 
         String particular;
         try {

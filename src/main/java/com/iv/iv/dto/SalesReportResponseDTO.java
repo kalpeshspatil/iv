@@ -8,6 +8,16 @@ public class SalesReportResponseDTO {
     private List<SalesReportDTO> salesReportList;
     private BigDecimal totalOfSaleBillingAmount;
 
+    public BigDecimal getTotalQuantityOfRetailer() {
+        return totalQuantityOfRetailer;
+    }
+
+    public void setTotalQuantityOfRetailer(BigDecimal totalQuantityOfRetailer) {
+        this.totalQuantityOfRetailer = totalQuantityOfRetailer;
+    }
+
+    private BigDecimal totalQuantityOfRetailer;
+
     public List<SalesReportDTO> getSalesReportList() {
         return salesReportList;
     }

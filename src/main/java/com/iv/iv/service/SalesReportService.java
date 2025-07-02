@@ -1,5 +1,6 @@
 package com.iv.iv.service;
 
+import com.iv.iv.dto.RetailerSalesReportRequest;
 import com.iv.iv.dto.SalesReportRequest;
 import com.iv.iv.dto.SalesReportResponseDTO;
 import com.iv.iv.repository.SalesReportRepository;
@@ -35,6 +36,28 @@ public class SalesReportService {
         SalesReportResponseDTO salesReportResponseDTO = new SalesReportResponseDTO();
         salesReportResponseDTO.setSalesReportList(salesReportList);
         salesReportResponseDTO.setTotalOfSaleBillingAmount(totalOfSaleBillingAmount);
+
+        return salesReportResponseDTO;
+    }
+
+    public SalesReportResponseDTO generateRetailerSalesReport(RetailerSalesReportRequest request) {
+        List<SalesReportDTO> salesReportList = salesReportRepository.findRetailerSalesReport(
+                request.getProductBrand(),
+                request.getRetailerId(),
+                request.getStartDate(),
+                request.getEndDate()
+        );
+
+        BigDecimal totalQuantityOfRetailer = salesReportRepository.getTotalRetailerSaleQuantity(
+                request.getProductBrand(),
+                request.getRetailerId(),
+                request.getStartDate(),
+                request.getEndDate()
+        );
+
+        SalesReportResponseDTO salesReportResponseDTO = new SalesReportResponseDTO();
+        salesReportResponseDTO.setSalesReportList(salesReportList);
+        salesReportResponseDTO.setTotalQuantityOfRetailer(totalQuantityOfRetailer);
 
         return salesReportResponseDTO;
     }

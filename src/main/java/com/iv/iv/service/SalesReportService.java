@@ -1,12 +1,9 @@
 package com.iv.iv.service;
 
-import com.iv.iv.dto.RetailerSalesReportRequest;
-import com.iv.iv.dto.SalesReportRequest;
-import com.iv.iv.dto.SalesReportResponseDTO;
+import com.iv.iv.dto.*;
 import com.iv.iv.repository.SalesReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.iv.iv.dto.SalesReportDTO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -40,8 +37,8 @@ public class SalesReportService {
         return salesReportResponseDTO;
     }
 
-    public SalesReportResponseDTO generateRetailerSalesReport(RetailerSalesReportRequest request) {
-        List<SalesReportDTO> salesReportList = salesReportRepository.findRetailerSalesReport(
+    public RetailerSalesReportResponseDTO generateRetailerSalesReport(RetailerSalesReportRequest request) {
+        List<RetailerSalesReportDTO> salesReportList = salesReportRepository.findRetailerSalesReport(
                 request.getProductBrand(),
                 request.getRetailerId(),
                 request.getStartDate(),
@@ -55,7 +52,7 @@ public class SalesReportService {
                 request.getEndDate()
         );
 
-        SalesReportResponseDTO salesReportResponseDTO = new SalesReportResponseDTO();
+        RetailerSalesReportResponseDTO salesReportResponseDTO = new RetailerSalesReportResponseDTO();
         salesReportResponseDTO.setSalesReportList(salesReportList);
         salesReportResponseDTO.setTotalQuantityOfRetailer(totalQuantityOfRetailer);
 

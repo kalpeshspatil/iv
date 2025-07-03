@@ -1,6 +1,7 @@
 package com.iv.iv.controller;
 
 import com.iv.iv.dto.RetailerSalesReportRequest;
+import com.iv.iv.dto.RetailerSalesReportResponseDTO;
 import com.iv.iv.dto.SalesReportRequest;
 import com.iv.iv.dto.SalesReportResponseDTO;
 import com.iv.iv.service.SalesReportService;
@@ -36,7 +37,7 @@ public class SalesReportController {
     @PostMapping("/retailer")
     public ResponseEntity<?> generateSalesReport(@RequestBody RetailerSalesReportRequest request) {
         try {
-            SalesReportResponseDTO report = salesReportService.generateRetailerSalesReport(request);
+            RetailerSalesReportResponseDTO report = salesReportService.generateRetailerSalesReport(request);
             return ResponseEntity.ok(report);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

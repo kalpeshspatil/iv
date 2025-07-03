@@ -1,5 +1,6 @@
 package com.iv.iv.repository;
 
+import com.iv.iv.dto.RetailerSalesReportDTO;
 import com.iv.iv.entity.Challan;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -54,24 +55,31 @@ public interface SalesReportRepository extends CrudRepository<Challan, Long> {
 
 
 
-    @Query(value = "SELECT tp.tp_customer_name AS customerName, c.order_delivery_date AS saleDate, " +
-            "tpc.challan_to_parties_qty AS quantity, c.pf_rate AS purchaseBillingRate, " +
-            "tpc.challan_to_parties_rate AS saleBillingRate, tpc.gross_amount AS totalAmount " +
+    @Query(value = "SELECT " +
+            "retailer.tp_customer_name AS retailerName, " +
+            "to_party.tp_customer_name AS tpCustomerName, " +
+            "c.order_delivery_date AS saleDate, " +
+            "tpc.challan_to_parties_qty AS quantity, " +
+            "c.pf_rate AS purchaseBillingRate, " +
+            "tpc.challan_to_parties_rate AS saleBillingRate, " +
+            "tpc.gross_amount AS totalAmount " +
             "FROM iv_to_parties_of_challan tpc " +
             "JOIN iv_challan c ON tpc.challan_id = c.challan_id " +
             "JOIN iv_product p ON c.product_id = p.product_id " +
-            "JOIN iv_to_party tp ON tpc.retailer_id = tp.tp_customer_id " +
+            "JOIN iv_to_party retailer ON tpc.retailer_id = retailer.tp_customer_id " +
+            "JOIN iv_to_party to_party ON tpc.tp_customer_id = to_party.tp_customer_id " +
             "WHERE (:productBrand IS NULL OR p.product_brand = :productBrand) " +
             "AND (:startDate IS NULL OR c.order_delivery_date >= :startDate) " +
             "AND (:endDate IS NULL OR c.order_delivery_date <= :endDate) " +
-            "AND (:retailerId IS NULL OR tp.tp_customer_id = :retailerId) " +
+            "AND (:retailerId IS NULL OR retailer.tp_customer_id = :retailerId) " +
             "ORDER BY c.order_delivery_date ASC", nativeQuery = true)
-    List<SalesReportDTO> findRetailerSalesReport(
+    List<RetailerSalesReportDTO> findRetailerSalesReport(
             @Param("productBrand") String productBrand,
             @Param("retailerId") Long retailerId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
 
 
 

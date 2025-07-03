@@ -2,7 +2,7 @@ package com.iv.iv.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -36,6 +36,7 @@ public class ChallanToParties {
     @ManyToOne
     @JoinColumn(name="retailer_id", referencedColumnName = "tp_customer_id", nullable = false)
     private ToParty retailer;
+
 
     @Column(name = "challan_to_parties_qty")
     private int challanToPartiesQty;
